@@ -1,7 +1,11 @@
 package com.ems.backend.dto;
 
 import com.ems.backend.entity.Role;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -11,10 +15,7 @@ import lombok.*;
 public class RegisterRequest {
 
     private String name;
-
     private String email;
-
     private String password;
-
     private Role role;
 }

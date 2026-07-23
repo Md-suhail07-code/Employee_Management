@@ -54,6 +54,10 @@ public class AuthServiceImpl implements AuthService {
         return AuthResponse.builder()
                 .token(token)
                 .message("Registration successful")
+                .id(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .role(user.getRole())
                 .build();
     }
 
@@ -72,6 +76,10 @@ public class AuthServiceImpl implements AuthService {
         return AuthResponse.builder()
                 .token(token)
                 .message("Login successful")
+                .id(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .role(user.getRole())
                 .build();
     }
 }
