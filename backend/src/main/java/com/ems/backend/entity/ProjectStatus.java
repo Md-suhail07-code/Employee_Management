@@ -1,4 +1,7 @@
 package com.ems.backend.entity;
 
-public class ProjectStatus {
+public enum ProjectStatus {
+    NOT_STARTED,
+    IN_PROGRESS,
+    COMPLETED
 }
