@@ -30,8 +30,13 @@ public class Employee {
 
     private LocalDate joiningDate;
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
+    @OneToOne(
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY,
+            optional = false
+    )
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
     @ManyToMany(mappedBy = "employees")
