@@ -262,21 +262,11 @@ README.md
 
 # Screenshots
 
-Add screenshots inside
+check the below folder
 
 ```
 screenshots/
 ```
-
-Example
-
-- Login
-- Dashboard
-- Employee Module
-- Project Module
-- Task Module
-- Reports
-- Dark Theme
 
 ---
 
@@ -291,7 +281,6 @@ database/
 Contains
 
 - Database Schema
-- Sample Data
 
 ---
 
