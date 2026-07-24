@@ -4,6 +4,10 @@ A full-stack Employee Management System built using **Spring Boot**, **React**, 
 
 ---
 
+## Application Architecture
+
+![Application Architecture](./flowcharts/ApplicationArchitecture.png)
+
 # Features
 
 ## Authentication
