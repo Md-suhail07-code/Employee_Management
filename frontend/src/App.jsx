@@ -9,15 +9,13 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import SidebarLayout from "./components/SidebarLayout";
 import EmployeeManagement from "./pages/EmployeeManagement";
+import ProjectManagement from "./pages/ProjectManagement";
 
 // Mock views until pages are created
 const ReportsOverview = () => (
   <div className="text-2xl font-bold">
     📊 Reports & Metrics Dashboard Overview
   </div>
-);
-const Projects = () => (
-  <div className="text-2xl font-bold">💼 Project Control Center</div>
 );
 const Tasks = () => (
   <div className="text-2xl font-bold">✅ Task Assignment Board</div>
@@ -49,7 +47,7 @@ export default function App() {
 
         {/* Functional Feature-Page Nodes */}
         <Route path="employees" element={<EmployeeManagement />} />
-        <Route path="projects" element={<Projects />} />
+        <Route path="projects" element={<ProjectManagement />} />
         <Route path="tasks" element={<Tasks />} />
       </Route>
 

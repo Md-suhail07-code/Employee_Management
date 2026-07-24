@@ -19,18 +19,26 @@ public class Project {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String title;
+    @Column(unique = true, nullable = false)
+    private String projectCode;
+
+    @Column(nullable = false)
+    private String projectName;
 
     @Column(columnDefinition = "TEXT")
     private String description;
+
+    @Column(nullable = false)
+    private LocalDate startDate;
+
+    @Column(nullable = false)
+    private LocalDate endDate;
 
     @Enumerated(EnumType.STRING)
     private ProjectStatus status;
 
     @Enumerated(EnumType.STRING)
     private Priority priority;
-
-    private LocalDate deadline;
 
     @ManyToMany
     @JoinTable(
