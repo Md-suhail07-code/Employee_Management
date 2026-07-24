@@ -278,6 +278,12 @@ SQL Scripts
 database/
 ```
 
+### Entity Relationship Diagram
+
+![ERD Diagram](./database/DatabaseERD.png)
+
+*Database schema showing relationships between Employee, Project, Task, and User tables*
+
 Contains
 
 - Database Schema
