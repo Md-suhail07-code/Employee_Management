@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { projectService } from "../api/project";
+import ProjectAssignmentModal from "../components/ProjectAssignmentModal";
 import {
   Plus,
   Search,
@@ -23,12 +24,14 @@ export default function ProjectManagement() {
   const [projects, setProjects] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
+  const [submitLoading, setSubmitLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [error, setError] = useState("");
 
   // Client-Side Active Filtering & Sorting State Engines
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [priorityFilter, setPriorityFilter] = useState("ALL");
-  const [sortKey, setSortKey] = useState("NONE"); // OPTIONS: 'NONE', 'NAME', 'DEADLINE', 'PRIORITY'
+  const [sortKey, setSortKey] = useState("NONE"); 
 
   // Pagination Settings
   const [currentPage, setCurrentPage] = useState(1);
@@ -39,6 +42,7 @@ export default function ProjectManagement() {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [targetDeleteId, setTargetDeleteId] = useState(null);
   const [editingProject, setEditingProject] = useState(null);
+  const [assignmentTargetProject, setAssignmentTargetProject] = useState(null);
 
   const [formData, setFormData] = useState({
     projectCode: "",
@@ -46,7 +50,7 @@ export default function ProjectManagement() {
     description: "",
     startDate: "",
     endDate: "",
-    status: "PLANNED",
+    status: "NOT_STARTED",
     priority: "MEDIUM",
   });
 
@@ -74,7 +78,7 @@ export default function ProjectManagement() {
       description: "",
       startDate: new Date().toISOString().split("T")[0],
       endDate: "",
-      status: "PLANNED",
+      status: "NOT_STARTED",
       priority: "MEDIUM",
     });
     setIsModalOpen(true);
@@ -101,6 +105,7 @@ export default function ProjectManagement() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setSubmitLoading(true);
     try {
       if (editingProject) {
         await projectService.update(editingProject.id, formData);
@@ -111,6 +116,8 @@ export default function ProjectManagement() {
       fetchProjects();
     } catch (err) {
       setError(err.response?.data?.message || "Error processing request payload parameters.");
+    } finally {
+      setSubmitLoading(false);
     }
   };
 
@@ -121,6 +128,7 @@ export default function ProjectManagement() {
 
   const handleDeleteExecute = async () => {
     if (!targetDeleteId) return;
+    setDeleteLoading(true);
     try {
       await projectService.delete(targetDeleteId);
       setIsDeleteOpen(false);
@@ -128,30 +136,26 @@ export default function ProjectManagement() {
       fetchProjects();
     } catch (err) {
       setError("Failed to execute project deletion sequence.");
-      setIsDeleteOpen(false);
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
-  // Pure Client-Side Compound Filter Pipeline Engine (No Network Cost)
   const processProjectData = () => {
-    // 1. Structural Keyword Search Filter[cite: 1]
     let result = projects.filter(
       (proj) =>
         proj.projectName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         proj.projectCode.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // 2. Status Category Matching Node[cite: 1]
     if (statusFilter !== "ALL") {
       result = result.filter((proj) => proj.status === statusFilter);
     }
 
-    // 3. Priority Tier Selection Node[cite: 1]
     if (priorityFilter !== "ALL") {
       result = result.filter((proj) => proj.priority === priorityFilter);
     }
 
-    // 4. Sorting Metrics Processing Node[cite: 1]
     if (sortKey === "NAME") {
       result.sort((a, b) => a.projectName.localeCompare(b.projectName));
     } else if (sortKey === "DEADLINE") {
@@ -166,21 +170,19 @@ export default function ProjectManagement() {
 
   const processedProjects = processProjectData();
 
-  // Pagination Calculus Layer[cite: 1]
   const totalItems = processedProjects.length;
   const totalPages = Math.ceil(totalItems / rowsPerPage);
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentRows = processedProjects.slice(indexOfFirstRow, indexOfLastRow);
 
-  // Auto-reset page view index on search/filter modifications
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, statusFilter, priorityFilter, sortKey]);
 
   const getStatusBadge = (status) => {
     const maps = {
-      PLANNED: "bg-amber-500/10 text-amber-600 border-amber-200/30 dark:bg-amber-500/20 dark:text-amber-400",
+      NOT_STARTED: "bg-amber-500/10 text-amber-600 border-amber-200/30 dark:bg-amber-500/20 dark:text-amber-400",
       IN_PROGRESS: "bg-indigo-500/10 text-indigo-600 border-indigo-200/30 dark:bg-indigo-500/20 dark:text-indigo-400",
       COMPLETED: "bg-emerald-500/10 text-emerald-600 border-emerald-200/30 dark:bg-emerald-500/20 dark:text-emerald-400",
     };
@@ -221,9 +223,8 @@ export default function ProjectManagement() {
         </button>
       </div>
 
-      {/* Glassmorphic Control Strip Bar (Search + Filtering + Sorting Combo) */}
+      {/* Control Strip Bar */}
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        {/* Keyword Search Input */}
         <div className="flex items-center w-full lg:max-w-xs relative group">
           <Search className="absolute left-3.5 h-4 w-4 text-slate-400 transition-colors group-focus-within:text-slate-900 dark:group-focus-within:text-slate-50" />
           <input
@@ -235,9 +236,8 @@ export default function ProjectManagement() {
           />
         </div>
 
-        {/* Dynamic Filters Control Shell */}
         <div className="grid grid-cols-3 gap-3 w-full lg:w-auto">
-          {/* Status Selection */}
+          {/* Status Selection Filter */}
           <div className="relative flex items-center">
             <Activity className="absolute left-3 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
             <select
@@ -245,14 +245,14 @@ export default function ProjectManagement() {
               onChange={(e) => setStatusFilter(e.target.value)}
               className="w-full rounded-xl border border-slate-200/80 bg-white/60 py-2.5 pl-9 pr-8 text-xs font-bold uppercase text-slate-600 outline-none backdrop-blur-md dark:border-slate-800/80 dark:bg-slate-950/40 dark:text-slate-300"
             >
-              <option value="ALL">All Statuses</option>
-              <option value="PLANNED">PLANNED</option>
-              <option value="IN_PROGRESS">IN PROGRESS</option>
-              <option value="COMPLETED">COMPLETED</option>
+              <option value="ALL">All Statuses[cite: 1]</option>
+              <option value="NOT_STARTED">NOT STARTED</option>
+              <option value="IN_PROGRESS">IN PROGRESS[cite: 1]</option>
+              <option value="COMPLETED">COMPLETED[cite: 1]</option>
             </select>
           </div>
 
-          {/* Priority Selection */}
+          {/* Priority Selection Filter */}
           <div className="relative flex items-center">
             <SlidersHorizontal className="absolute left-3 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
             <select
@@ -260,14 +260,14 @@ export default function ProjectManagement() {
               onChange={(e) => setPriorityFilter(e.target.value)}
               className="w-full rounded-xl border border-slate-200/80 bg-white/60 py-2.5 pl-9 pr-8 text-xs font-bold uppercase text-slate-600 outline-none backdrop-blur-md dark:border-slate-800/80 dark:bg-slate-950/40 dark:text-slate-300"
             >
-              <option value="ALL">All Priorities</option>
-              <option value="HIGH">HIGH</option>
-              <option value="MEDIUM">MEDIUM</option>
-              <option value="LOW">LOW</option>
+              <option value="ALL">All Priorities[cite: 1]</option>
+              <option value="HIGH">HIGH[cite: 1]</option>
+              <option value="MEDIUM">MEDIUM[cite: 1]</option>
+              <option value="LOW">LOW[cite: 1]</option>
             </select>
           </div>
 
-          {/* Engine Data Sorter */}
+          {/* Data Sorter Engine */}
           <div className="relative flex items-center">
             <ArrowUpDown className="absolute left-3 h-3.5 w-3.5 text-slate-400 pointer-events-none" />
             <select
@@ -275,10 +275,10 @@ export default function ProjectManagement() {
               onChange={(e) => setSortKey(e.target.value)}
               className="w-full rounded-xl border border-slate-200/80 bg-white/60 py-2.5 pl-9 pr-8 text-xs font-bold uppercase text-slate-600 outline-none backdrop-blur-md dark:border-slate-800/80 dark:bg-slate-950/40 dark:text-slate-300"
             >
-              <option value="NONE">Sort Rules</option>
-              <option value="NAME">Name</option>
-              <option value="DEADLINE">Deadline</option>
-              <option value="PRIORITY">Priority</option>
+              <option value="NONE">Sort Rules[cite: 1]</option>
+              <option value="NAME">Name[cite: 1]</option>
+              <option value="DEADLINE">Deadline[cite: 1]</option>
+              <option value="PRIORITY">Priority[cite: 1]</option>
             </select>
           </div>
         </div>
@@ -290,10 +290,11 @@ export default function ProjectManagement() {
         </div>
       )}
 
-      {/* Glassmorphic Table Scaffolding */}
+      {/* Glassmorphic Data Table Shell */}
       {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
+        <div className="flex flex-col items-center justify-center py-20 gap-3">
+          <Loader2 className="h-8 w-8 animate-spin text-slate-500" />
+          <span className="text-xs font-bold uppercase tracking-widest text-slate-400 animate-pulse">Syncing Repository...</span>
         </div>
       ) : (
         <div className="overflow-hidden rounded-2xl border border-slate-200/60 bg-white/50 shadow-xl shadow-slate-200/20 backdrop-blur-md dark:border-slate-800/60 dark:bg-slate-950/30 dark:shadow-none">
@@ -313,7 +314,7 @@ export default function ProjectManagement() {
                 {currentRows.length === 0 ? (
                   <tr>
                     <td colSpan="6" className="px-6 py-12 text-center font-medium text-slate-400 bg-white/[0.02]">
-                      No active programmatic ventures match standard filters.
+                      No active programmatic ventures match current selection filters.
                     </td>
                   </tr>
                 ) : (
@@ -351,14 +352,19 @@ export default function ProjectManagement() {
                       <td className="px-6 py-4">
                         <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold border ${getStatusBadge(proj.status)}`}>
                           <Activity className="h-3 w-3" />
-                          {proj.status}
+                          {proj.status.replace("_", " ")}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-slate-600 dark:text-slate-300 font-semibold text-xs">
-                        <div className="flex items-center gap-1.5">
-                          <UserCheck className="h-4 w-4 text-slate-400" />
-                          <span>{proj.employeeCount || 0} Staff Locked</span>
-                        </div>
+                      <td className="px-6 py-4">
+                        <button
+                          onClick={() => setAssignmentTargetProject(proj)}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-slate-200/60 bg-white/40 shadow-sm hover:border-indigo-400 hover:bg-indigo-50/20 text-slate-700 dark:border-slate-800/60 dark:bg-slate-950/40 dark:text-slate-300 dark:hover:border-indigo-500 transition-all group/asset"
+                        >
+                          <UserCheck className="h-4 w-4 text-slate-400 group-hover/asset:text-indigo-500 transition-colors" />
+                          <span className="font-bold text-xs group-hover/asset:text-indigo-600 dark:group-hover/asset:text-indigo-400 transition-colors">
+                            {proj.employeeCount || 0} Staff Locked[cite: 1]
+                          </span>
+                        </button>
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="inline-flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
@@ -383,7 +389,7 @@ export default function ProjectManagement() {
             </table>
           </div>
 
-          {/* Pagination Core[cite: 1] */}
+          {/* Pagination Controls Component[cite: 1] */}
           {totalItems > 0 && (
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-t border-slate-200/60 bg-slate-900/[0.01] px-6 py-4 dark:border-slate-800/60 dark:bg-white/[0.01]">
               <div className="text-xs font-semibold tracking-wide uppercase text-slate-400/90 text-center sm:text-left">
@@ -430,7 +436,7 @@ export default function ProjectManagement() {
         </div>
       )}
 
-      {/* Unified Action Create/Edit Glassmorphic Overlay Modal */}
+      {/* Unified Action Create/Edit Overlay Dialog Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/30 p-4 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="w-full max-w-lg rounded-2xl border border-slate-200/80 bg-white/90 p-6 shadow-2xl backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-950/90 animate-in zoom-in-95 duration-200">
@@ -440,7 +446,8 @@ export default function ProjectManagement() {
               </h3>
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors"
+                disabled={submitLoading}
+                className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-900 transition-colors disabled:opacity-30"
               >
                 <X className="h-4 w-4 stroke-[2.5]" />
               </button>
@@ -454,8 +461,9 @@ export default function ProjectManagement() {
                     type="text"
                     name="projectCode"
                     required
+                    disabled={submitLoading}
                     placeholder="e.g. PRJ-001"
-                    className="w-full rounded-xl border border-slate-200 bg-white/50 px-3.5 py-2 text-sm outline-none transition focus:border-slate-400 dark:border-slate-800 dark:bg-slate-950/50 dark:focus:border-slate-700 dark:text-white"
+                    className="w-full rounded-xl border border-slate-200 bg-white/50 px-3.5 py-2 text-sm outline-none transition focus:border-slate-400 dark:border-slate-800 dark:bg-slate-950/50 dark:focus:border-slate-700 dark:text-white disabled:opacity-50"
                     value={formData.projectCode}
                     onChange={handleInputChange}
                   />
@@ -466,7 +474,8 @@ export default function ProjectManagement() {
                     type="text"
                     name="projectName"
                     required
-                    className="w-full rounded-xl border border-slate-200 bg-white/50 px-3.5 py-2 text-sm outline-none transition focus:border-slate-400 dark:border-slate-800 dark:bg-slate-950/50 dark:focus:border-slate-700 dark:text-white"
+                    disabled={submitLoading}
+                    className="w-full rounded-xl border border-slate-200 bg-white/50 px-3.5 py-2 text-sm outline-none transition focus:border-slate-400 dark:border-slate-800 dark:bg-slate-950/50 dark:focus:border-slate-700 dark:text-white disabled:opacity-50"
                     value={formData.projectName}
                     onChange={handleInputChange}
                   />
@@ -477,7 +486,8 @@ export default function ProjectManagement() {
                     name="description"
                     rows="2"
                     required
-                    className="w-full rounded-xl border border-slate-200 bg-white/50 px-3.5 py-2 text-sm outline-none transition focus:border-slate-400 dark:border-slate-800 dark:bg-slate-950/50 dark:focus:border-slate-700 dark:text-white resize-none"
+                    disabled={submitLoading}
+                    className="w-full rounded-xl border border-slate-200 bg-white/50 px-3.5 py-2 text-sm outline-none transition focus:border-slate-400 dark:border-slate-800 dark:bg-slate-950/50 dark:focus:border-slate-700 dark:text-white resize-none disabled:opacity-50"
                     value={formData.description}
                     onChange={handleInputChange}
                   />
@@ -488,7 +498,8 @@ export default function ProjectManagement() {
                     type="date"
                     name="startDate"
                     required
-                    className="w-full rounded-xl border border-slate-200 bg-white/50 px-3.5 py-2 text-sm outline-none transition focus:border-slate-400 dark:border-slate-800 dark:bg-slate-950/50 dark:focus:border-slate-700 dark:text-white"
+                    disabled={submitLoading}
+                    className="w-full rounded-xl border border-slate-200 bg-white/50 px-3.5 py-2 text-sm outline-none transition focus:border-slate-400 dark:border-slate-800 dark:bg-slate-950/50 dark:focus:border-slate-700 dark:text-white disabled:opacity-50"
                     value={formData.startDate}
                     onChange={handleInputChange}
                   />
@@ -499,7 +510,8 @@ export default function ProjectManagement() {
                     type="date"
                     name="endDate"
                     required
-                    className="w-full rounded-xl border border-slate-200 bg-white/50 px-3.5 py-2 text-sm outline-none transition focus:border-slate-400 dark:border-slate-800 dark:bg-slate-950/50 dark:focus:border-slate-700 dark:text-white"
+                    disabled={submitLoading}
+                    className="w-full rounded-xl border border-slate-200 bg-white/50 px-3.5 py-2 text-sm outline-none transition focus:border-slate-400 dark:border-slate-800 dark:bg-slate-950/50 dark:focus:border-slate-700 dark:text-white disabled:opacity-50"
                     value={formData.endDate}
                     onChange={handleInputChange}
                   />
@@ -508,20 +520,22 @@ export default function ProjectManagement() {
                   <label className="text-xs font-bold uppercase tracking-wider text-slate-400">Lifecycle Status[cite: 1]</label>
                   <select
                     name="status"
-                    className="w-full rounded-xl border border-slate-200 bg-white/50 px-3.5 py-2 text-sm outline-none transition focus:border-slate-400 dark:border-slate-800 dark:bg-slate-950/50 dark:focus:border-slate-700 dark:text-white"
+                    disabled={submitLoading}
+                    className="w-full rounded-xl border border-slate-200 bg-white/50 px-3.5 py-2 text-sm outline-none transition focus:border-slate-400 dark:border-slate-800 dark:bg-slate-950/50 dark:focus:border-slate-700 dark:text-white disabled:opacity-50"
                     value={formData.status}
                     onChange={handleInputChange}
                   >
-                    <option value="PLANNED">PLANNED</option>
-                    <option value="IN_PROGRESS">IN_PROGRESS</option>
-                    <option value="COMPLETED">COMPLETED</option>
+                    <option value="NOT_STARTED">NOT STARTED</option>
+                    <option value="IN_PROGRESS">IN PROGRESS[cite: 1]</option>
+                    <option value="COMPLETED">COMPLETED[cite: 1]</option>
                   </select>
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs font-bold uppercase tracking-wider text-slate-400">Priority Tier[cite: 1]</label>
                   <select
                     name="priority"
-                    className="w-full rounded-xl border border-slate-200 bg-white/50 px-3.5 py-2 text-sm outline-none transition focus:border-slate-400 dark:border-slate-800 dark:bg-slate-950/50 dark:focus:border-slate-700 dark:text-white"
+                    disabled={submitLoading}
+                    className="w-full rounded-xl border border-slate-200 bg-white/50 px-3.5 py-2 text-sm outline-none transition focus:border-slate-400 dark:border-slate-800 dark:bg-slate-950/50 dark:focus:border-slate-700 dark:text-white disabled:opacity-50"
                     value={formData.priority}
                     onChange={handleInputChange}
                   >
@@ -536,15 +550,18 @@ export default function ProjectManagement() {
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="rounded-xl border border-slate-300 px-4.5 py-2 text-sm font-semibold hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-900 transition-colors"
+                  disabled={submitLoading}
+                  className="rounded-xl border border-slate-300 px-4.5 py-2 text-sm font-semibold hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-900 transition-colors disabled:opacity-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="rounded-xl bg-slate-950 px-5 py-2 text-sm font-semibold text-slate-50 hover:bg-slate-850 dark:bg-slate-50 dark:text-slate-950 dark:hover:bg-slate-200 transition-all"
+                  disabled={submitLoading}
+                  className="inline-flex items-center gap-2 rounded-xl bg-slate-950 px-5 py-2 text-sm font-semibold text-slate-50 hover:bg-slate-850 dark:bg-slate-50 dark:text-slate-950 dark:hover:bg-slate-200 transition-all disabled:opacity-70"
                 >
-                  Save Venture
+                  {submitLoading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+                  Commit Changes
                 </button>
               </div>
             </form>
@@ -552,7 +569,7 @@ export default function ProjectManagement() {
         </div>
       )}
 
-      {/* Custom Confirmation Destructive Dialog Modal */}
+      {/* Destructive Deletion Dialog Modal Component */}
       {isDeleteOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/30 p-4 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="w-full max-w-md rounded-2xl border border-slate-200/80 bg-white/90 p-6 shadow-2xl backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-950/90 animate-in zoom-in-95 duration-200">
@@ -576,20 +593,32 @@ export default function ProjectManagement() {
                   setIsDeleteOpen(false);
                   setTargetDeleteId(null);
                 }}
-                className="rounded-xl border border-slate-300 px-4.5 py-2 text-sm font-semibold hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-900 transition-colors"
+                disabled={deleteLoading}
+                className="rounded-xl border border-slate-300 px-4.5 py-2 text-sm font-semibold hover:bg-slate-50 dark:border-slate-800 dark:hover:bg-slate-900 transition-colors disabled:opacity-50"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleDeleteExecute}
-                className="rounded-xl bg-red-600 px-5 py-2 text-sm font-semibold text-white hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 transition-all shadow-sm"
+                disabled={deleteLoading}
+                className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-5 py-2 text-sm font-semibold text-white hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 transition-all shadow-sm disabled:opacity-70"
               >
+                {deleteLoading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                 Purge Record
               </button>
             </div>
           </div>
         </div>
+      )}
+
+      {/* Dynamic Personnel Resource Assignment Trigger Shell */}
+      {assignmentTargetProject && (
+        <ProjectAssignmentModal
+          project={assignmentTargetProject}
+          onClose={() => setAssignmentTargetProject(null)}
+          onRefreshProjectList={fetchProjects}
+        />
       )}
     </div>
   );
