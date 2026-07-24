@@ -17,6 +17,10 @@ A full-stack Employee Management System built using **Spring Boot**, **React**, 
 - Role Based Authorization
 - BCrypt Password Encryption
 
+## Auth Flow chart
+
+![Auth Flow chart](./flowcharts/authFlowchart.png)
+
 ---
 
 ## Employee Management
@@ -27,6 +31,11 @@ A full-stack Employee Management System built using **Spring Boot**, **React**, 
 - View Employee Details
 - Search Employees
 - Employee Profile
+
+## Employee Flow chart
+
+![Employee Flow chart](./flowcharts/employee.png)
+
 
 ---
 
@@ -39,6 +48,10 @@ A full-stack Employee Management System built using **Spring Boot**, **React**, 
 - Remove Employees
 - Automatic Project Progress Calculation
 
+## Project Flow chart
+
+![Project Flow chart](./flowcharts/projects.png)
+
 ---
 
 ## Task Management
@@ -49,6 +62,11 @@ A full-stack Employee Management System built using **Spring Boot**, **React**, 
 - Update Task Priority
 - Due Date Management
 - Project Progress Auto Update
+
+## Task Flow chart
+
+![Task Flow chart](./flowcharts/tasks.png)
+
 
 ---
 
