@@ -1,0 +1,51 @@
+{
+  "info": {
+    "_postman_id": "1a2e92d7-a3b8-453b-b648-a819f289d8a1",
+    "name": "adminDash",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "49718111",
+    "_collection_link": "https://go.postman.co/collection/49718111-1a2e92d7-a3b8-453b-b648-a819f289d8a1?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "summary",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{supabase_service_role_api_key_13uk}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Rahul Sharma\",\r\n  \"email\": \"rahul.sharma@company.com\",\r\n  \"password\": \"Rahul@123\",\r\n  \"department\": \"IT\",\r\n  \"designation\": \"Software Engineer\",\r\n  \"phone\": \"9876543210\",\r\n  \"joiningDate\": \"2026-07-20\"\r\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/reports/summary",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "reports",
+            "summary"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "supabase_service_role_api_key_13uk",
+      "value": ""
+    }
+  ]
+}

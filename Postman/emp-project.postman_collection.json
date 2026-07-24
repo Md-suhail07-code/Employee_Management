@@ -1,0 +1,112 @@
+{
+  "info": {
+    "_postman_id": "ff000135-c0b4-40df-9d0a-77f12a1579fe",
+    "name": "emp-project",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "49718111",
+    "_collection_link": "https://go.postman.co/collection/49718111-ff000135-c0b4-40df-9d0a-77f12a1579fe?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "assignEmpProject",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{vault:supabase_service_role_api_key_13uk}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"projectCode\": \"PRJ-001\",\r\n  \"projectName\": \"Employee and Project Management System\",\r\n  \"description\": \"Develop a web application to manage employees, projects and tasks.\",\r\n  \"startDate\": \"2026-07-01\",\r\n  \"endDate\": \"2026-10-30\",\r\n  \"status\": \"COMPLETED\",\r\n  \"priority\": \"HIGH\"\r\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/projects/3/employees/3",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "projects",
+            "3",
+            "employees",
+            "3"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "deleteEmpProject",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{vault:supabase_service_role_api_key_13uk}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"projectCode\": \"PRJ-001\",\r\n  \"projectName\": \"Employee and Project Management System\",\r\n  \"description\": \"Develop a web application to manage employees, projects and tasks.\",\r\n  \"startDate\": \"2026-07-01\",\r\n  \"endDate\": \"2026-10-30\",\r\n  \"status\": \"COMPLETED\",\r\n  \"priority\": \"HIGH\"\r\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/projects/3/employees/3",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "projects",
+            "3",
+            "employees",
+            "3"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "getProjectEmp's",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{vault:supabase_service_role_api_key_13uk}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"projectCode\": \"PRJ-001\",\r\n  \"projectName\": \"Employee and Project Management System\",\r\n  \"description\": \"Develop a web application to manage employees, projects and tasks.\",\r\n  \"startDate\": \"2026-07-01\",\r\n  \"endDate\": \"2026-10-30\",\r\n  \"status\": \"COMPLETED\",\r\n  \"priority\": \"HIGH\"\r\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/projects/1/employees",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "projects",
+            "1",
+            "employees"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

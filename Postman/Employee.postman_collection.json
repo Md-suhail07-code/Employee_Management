@@ -1,0 +1,191 @@
+{
+  "info": {
+    "_postman_id": "b2922b82-8381-4dc0-9ce2-ccc1f90d4353",
+    "name": "Employee",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "49718111",
+    "_collection_link": "https://go.postman.co/collection/49718111-b2922b82-8381-4dc0-9ce2-ccc1f90d4353?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "GetEmployees",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{supabase_service_role_api_key_13uk}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"name\":\"Mohammad Suhail\",\r\n    \"email\":\"suhail@gmail.com\",\r\n    \"password\":\"admin@123\",\r\n    \"role\":\"ADMIN\"\r\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/employees",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "employees"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "addEmp",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{supabase_service_role_api_key_13uk}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"John Smith\",\r\n  \"email\": \"john.smith@gmail.com\",\r\n  \"password\": \"john123\",\r\n  \"department\": \"IT\",\r\n  \"designation\": \"Backend Developer\",\r\n  \"phone\": \"9876543210\",\r\n  \"joiningDate\": \"2025-07-20\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/employees",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "employees"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "updateEmployee",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "{{bearer_token_0rc1}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"John Smith\",\r\n  \"email\": \"john.smith@gmail.com\",\r\n  \"password\": \"password123\",\r\n  \"department\": \"AI\",\r\n  \"designation\": \"AI Developer\",\r\n  \"phone\": \"9876543210\",\r\n  \"joiningDate\": \"2025-07-20\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/employees/5",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "employees",
+            "5"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "deleteemployee",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{supabase_service_role_api_key_13uk}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n  \"name\": \"Rahul Sharma\",\r\n  \"email\": \"rahul.sharma@company.com\",\r\n  \"password\": \"Rahul@123\",\r\n  \"department\": \"IT\",\r\n  \"designation\": \"Software Engineer\",\r\n  \"phone\": \"9876543210\",\r\n  \"joiningDate\": \"2026-07-20\"\r\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/employees/5",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "employees",
+            "5"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "getEmpId",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{supabase_service_role_api_key_103w}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8080/api/employees/1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "api",
+            "employees",
+            "1"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "supabase_service_role_api_key_13uk",
+      "secret": true
+    },
+    {
+      "key": "bearer_token_1bdn",
+      "secret": true
+    },
+    {
+      "key": "bearer_token_0rc1",
+      "secret": true
+    },
+    {
+      "key": "supabase_service_role_api_key_103w",
+      "secret": true
+    }
+  ]
+}
