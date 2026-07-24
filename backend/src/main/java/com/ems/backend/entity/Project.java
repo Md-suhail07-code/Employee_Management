@@ -40,6 +40,10 @@ public class Project {
     @Enumerated(EnumType.STRING)
     private Priority priority;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private Integer progress = 0;
+
     @ManyToMany
     @JoinTable(
             name = "employee_project",

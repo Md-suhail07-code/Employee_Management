@@ -15,6 +15,7 @@ public class ProjectResponse {
     private LocalDate endDate;
     private ProjectStatus status;
     private Priority priority;
+    private Integer progress;
     private int employeeCount;
 
     public ProjectResponse() {
@@ -22,7 +23,7 @@ public class ProjectResponse {
 
     public ProjectResponse(Long id, String projectCode, String projectName, String description,
                            LocalDate startDate, LocalDate endDate, ProjectStatus status,
-                           Priority priority, int employeeCount) {
+                           Priority priority, Integer progress, int employeeCount) {
         this.id = id;
         this.projectCode = projectCode;
         this.projectName = projectName;
@@ -31,6 +32,7 @@ public class ProjectResponse {
         this.endDate = endDate;
         this.status = status;
         this.priority = priority;
+        this.progress = progress;
         this.employeeCount = employeeCount;
     }
 
@@ -96,6 +98,14 @@ public class ProjectResponse {
 
     public void setPriority(Priority priority) {
         this.priority = priority;
+    }
+
+    public Integer getProgress() {
+        return progress;
+    }
+
+    public void setProgress(Integer progress) {
+        this.progress = progress;
     }
 
     public int getEmployeeCount() {

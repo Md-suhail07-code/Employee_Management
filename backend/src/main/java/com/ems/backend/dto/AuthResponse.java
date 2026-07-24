@@ -22,4 +22,5 @@ public class AuthResponse {
 
     private Role role;
 
+    private String profilePicUrl;
 }

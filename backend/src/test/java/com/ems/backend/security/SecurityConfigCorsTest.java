@@ -27,12 +27,13 @@ class SecurityConfigCorsTest {
     }
 
     @Test
-    void shouldAllowFrontendOriginForLoginPreflight() throws Exception {
-        mockMvc.perform(options("/api/auth/login")
+    void shouldAllowFrontendOriginForTaskProgressPreflight() throws Exception {
+        mockMvc.perform(options("/api/tasks/1/progress")
                         .header(HttpHeaders.ORIGIN, "http://localhost:5173")
-                        .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "POST")
-                        .header(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, "content-type"))
+                        .header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "PATCH")
+                        .header(HttpHeaders.ACCESS_CONTROL_REQUEST_HEADERS, "authorization, content-type"))
                 .andExpect(status().isOk())
-                .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "http://localhost:5173"));
+                .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, "http://localhost:5173"))
+                .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, org.hamcrest.Matchers.containsString("PATCH")));
     }
 }

@@ -1,39 +1,37 @@
 import React from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import SidebarLayout from "./components/SidebarLayout";
+import EmployeeLayout from "./components/EmployeeLayout";
 import EmployeeManagement from "./pages/EmployeeManagement";
 import ProjectManagement from "./pages/ProjectManagement";
+import TaskManagement from "./pages/TaskManagement";
+import ReportsDashboard from "./pages/ReportsDashboard";
+import EmployeeDashboard from "./pages/EmployeeDashboard";
+import Profile from "./pages/Profile";
 
-// Mock views until pages are created
-const ReportsOverview = () => (
-  <div className="text-2xl font-bold">
-    📊 Reports & Metrics Dashboard Overview
-  </div>
-);
-const Tasks = () => (
-  <div className="text-2xl font-bold">✅ Task Assignment Board</div>
-);
-
-const ProtectedRoute = ({ children }) => {
+const ProtectedRoute = ({ allowedRoles, children }) => {
   const token = localStorage.getItem("token");
-  return token ? children : <Navigate to="/login" replace />;
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  if (!token || !user) return <Navigate to="/login" replace />;
+  if (allowedRoles && !allowedRoles.includes(user.role)) {
+    return (
+      <Navigate
+        to={user.role === "ADMIN" ? "/dashboard" : "/employeeDashboard"}
+        replace
+      />
+    );
+  }
+  return children;
 };
 
 export default function App() {
   return (
     <Routes>
-      {/* Entry Point Authentication Frameworks */}
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
-
-      {/* Shielded Layout Sub-Tree Routing Structures */}
       <Route
         path="/dashboard"
         element={
@@ -42,17 +40,27 @@ export default function App() {
           </ProtectedRoute>
         }
       >
-        {/* Default Route: Dashboard Reports Overview[cite: 1] */}
-        <Route index element={<ReportsOverview />} />
-
-        {/* Functional Feature-Page Nodes */}
+        <Route index element={<ReportsDashboard />} />
         <Route path="employees" element={<EmployeeManagement />} />
         <Route path="projects" element={<ProjectManagement />} />
-        <Route path="tasks" element={<Tasks />} />
+        <Route path="tasks" element={<TaskManagement />} />
+        <Route path="profile" element={<Profile />} />
       </Route>
 
-      {/* Catch-all Routing Strategy */}
+      {/* Employee Top Nav Layout */}
+      <Route
+        element={
+          <ProtectedRoute allowedRoles={["EMPLOYEE"]}>
+            <EmployeeLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route path="/employeeDashboard" element={<EmployeeDashboard />} />
+        <Route path="/profile" element={<Profile />} />
+      </Route>
+
       <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 }
+

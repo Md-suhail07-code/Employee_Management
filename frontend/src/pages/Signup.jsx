@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { authService } from "../api/auth";
-import { User, Mail, Lock, Loader2, ArrowRight } from "lucide-react";
+import { useTheme } from "../context/ThemeContext";
+import { User, Mail, Lock, Loader2, ArrowRight, Sun, Moon } from "lucide-react";
 
 export default function Signup() {
   const [formData, setFormData] = useState({
@@ -12,6 +13,7 @@ export default function Signup() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   const navigate = useNavigate();
 
@@ -38,11 +40,31 @@ export default function Signup() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 px-4 dark:bg-slate-900">
+    <div className="relative flex min-h-screen items-center justify-center bg-slate-50 px-4 dark:bg-slate-900 transition-colors duration-300">
+      {/* Top Corner Dark Mode Toggle */}
+      <button
+        onClick={toggleTheme}
+        className="absolute top-6 right-6 flex items-center gap-2 rounded-xl border border-slate-200/80 bg-white/80 px-3 py-2 text-xs font-bold text-slate-700 shadow-sm hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-950/80 dark:text-slate-300 dark:hover:bg-slate-900"
+        title="Toggle Theme"
+      >
+        {theme === "dark" ? (
+          <>
+            <Moon className="h-4 w-4 text-indigo-400" />
+            <span>Dark</span>
+          </>
+        ) : (
+          <>
+            <Sun className="h-4 w-4 text-amber-500" />
+            <span>Light</span>
+          </>
+        )}
+      </button>
+
       <div className="w-full max-w-md space-y-6 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-950">
         <div className="space-y-2 text-center">
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
             Create an Account
+
           </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400">
             Register a new Admin management profile

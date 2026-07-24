@@ -19,6 +19,7 @@ public class ProjectMapper {
         project.setEndDate(request.getEndDate());
         project.setStatus(request.getStatus());
         project.setPriority(request.getPriority());
+        project.setProgress(0);
         return project;
     }
 
@@ -32,6 +33,7 @@ public class ProjectMapper {
                 project.getEndDate(),
                 project.getStatus(),
                 project.getPriority(),
+                project.getProgress(),
                 Optional.ofNullable(project.getEmployees()).map(java.util.List::size).orElse(0)
         );
     }
